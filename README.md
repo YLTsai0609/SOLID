@@ -34,14 +34,8 @@ D : 依賴倒置原則 Dependency Inversion Principle
 
 # 安裝
 
-1. 建立虛擬環境及安裝所需套件
-
  `conda create --name solid python=3.6`
 
  `conda activate solid`
 
  `pip install -r requirements.txt`
-
-2. 開啟jupyter notebook進行瀏覽(由於有安裝jupytext，可以直接進入`.py`檔案中)
-
- `jupyter notenook`
