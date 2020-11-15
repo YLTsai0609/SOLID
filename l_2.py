@@ -2,9 +2,14 @@
 以[Python工匠]，里氏替換原則內文舉例
 第2種常見的難維護情況，父類子類同方法返回值不同
 造成使用類別時難以管理
+若按照里氏替換原則進行設計，子類應當可以任意抽換父類，並且程式還能跑
+就能得出子類返回值應當設計成一樣的，甚至輸入參數也是，若未來需要擴充的情況下
+就能夠確保類別使用方法不必修修改改，型別判斷，降低未來維護成本
+
+本例子中兩類別中list_related_posts將修改為都使用generator(也可改成都是list，只是選擇的不同)
 '''
 
-from typing import Iterable, Generator
+from typing import Generator
 
 
 class Post:
@@ -32,26 +37,18 @@ class User():
     def add_post(self, name):
         self.post_list.append(name)
 
-    def list_related_posts(self) -> Iterable[int]:
+    def list_related_posts(self) -> Generator[int, None, None]:
         """
-        得到所有和該使用者有關的PostId
+        得到所有和該使用者有關的post
         """
-        return self.post_list
+        for post in self.post_list:
+            yield post
 
 
 class Admin(User):
     """
     管理員
     """
-
-    def list_related_posts(self) -> Generator[int, None, None]:
-        """
-        管理員和所有文章都有關係，以Generator傳回，節省記憶體空間
-        Yields:
-            Generator[int]: post id
-        """
-        for post in self.post_list:
-            yield post.id
 
 
 def main():
@@ -64,7 +61,9 @@ def main():
 
     # 列出所有使用者與其相關的文章
     for user in [u1, u2, admin]:
-        print(f'{user.username} : {user.list_related_posts()}')
+        print(f'{user.username}')
+        for post in user.list_related_posts():
+            print(f'{post}')
 
 
 if __name__ == '__main__':
