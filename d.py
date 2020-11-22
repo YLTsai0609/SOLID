@@ -14,22 +14,54 @@ import requests
 from lxml import etree
 from typing import Dict
 from collections import Counter
+from abc import ABCMeta, abstractmethod
 
 
-class SiteSourceGrouper:
+class HNWebPage(metaclass=ABCMeta):
     """
-    對HackerNews的域名進行分組統計
+    抽象类：Hacker New 站点页面
+    抽象類別無法被實例化，並且繼承本類別的子類別，都必須實作get_text
     """
+
+    @abstractmethod
+    def get_text(self) -> str:
+        raise NotImplementedError
+
+
+class RemoteHNWebPage(HNWebPage):
+    """远程页面，通过请求 HN 站点返回内容"""
 
     def __init__(self, url: str):
         self.url = url
 
-    def get_groups(self) -> Dict[str, int]:
-        """
-        獲取域名、個數資料
-        """
+    def get_text(self) -> str:
         resp = requests.get(self.url)
-        html = etree.HTML(resp.text)
+        return resp.text
+
+
+class LocalHNWebPage(HNWebPage):
+    """本地页面，根据本地文件返回页面内容"""
+
+    def __init__(self, path: str):
+        self.path = path
+
+    def get_text(self) -> str:
+        with open(self.path, 'r') as fp:
+            return fp.read()
+
+
+class SiteSourceGrouper:
+    """
+    對HackNews進行域名的分組統計
+    """
+
+    def __init__(self, page: HNWebPage):
+        self.page = page
+
+    def get_groups(self) -> Dict[str, int]:
+        """獲取 (域名, 个数) 分组
+        """
+        html = etree.HTML(self.page.get_text())
         elems = html.xpath(
             '//table[@class="itemlist"]//span[@class="sitestr"]')
 
@@ -39,19 +71,15 @@ class SiteSourceGrouper:
         return groups
 
 
-def test_grouper_returning_valid_types():
-    """测试 get_groups 是否返回了正确类型
-    """
-    grouper = SiteSourceGrouper('https://news.ycombinator.com/')
+def test_grouper_from_local():
+    page = LocalHNWebPage(path="data/static_hn.html")
+    grouper = SiteSourceGrouper(page)
     result = grouper.get_groups()
     assert isinstance(result, Counter), "groups should be Counter instance"
 
 
 def main():
-    groups = SiteSourceGrouper("https://news.ycombinator.com/").get_groups()
-    for key, value in groups.most_common(3):
-        print(f'Site: {key} | Count: {value}')
-    test_grouper_returning_valid_types()
+    test_grouper_from_local()
     print('Test passed!')
 
 
