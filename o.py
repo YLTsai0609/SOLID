@@ -86,7 +86,18 @@ def plot_history(history: dict,
     return ax1, ax2
 
 
-def main():
+def extract_label_keyword_func(exp_name: str, extract_pattern: re.Pattern) -> str:
+    """
+    Args:
+        exp_name (str): 輸入的實驗名稱
+        extract_pattern(re.Pattern) : 擷取標籤的正則表達式
+    Returns:
+        str: 輸出的histroy plot label
+    """
+    return extract_pattern.search(exp_name).group()
+
+
+def main(pattern_to_extract_label: re.Pattern):
     display_exp = sorted(os.listdir('experiments'))
     exp_s = "\n".join(display_exp)
     print(f'all experiments are : {exp_s}')
@@ -118,8 +129,8 @@ def main():
                     row = 2
                 else:
                     raise ValueError('should be 3 fold in this experiments')
-                pat = re.compile(r'dataset_1_(aug_[0-9]*)')
-                short_exp_name = pat.findall(exp_name)[0]
+                short_exp_name = extract_label_keyword_func(exp_name,
+                                                            pattern_to_extract_label)
                 axes[row][0], axes[row][1] = plot_history(history=history,
                                                           ax1=axes[row][0], ax2=axes[row][1],
                                                           lbl=short_exp_name,
@@ -137,4 +148,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    pattern_to_extract_label = re.compile(r'dataset_1_(aug_[0-9]+)')
+    main(pattern_to_extract_label)
