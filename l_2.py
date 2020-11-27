@@ -34,8 +34,8 @@ class User():
         self.username = username
         self.post_list = []
 
-    def add_post(self, name):
-        self.post_list.append(name)
+    def add_post(self, post):
+        self.post_list.append(post)
 
     def list_related_posts(self) -> Generator[int, None, None]:
         """
