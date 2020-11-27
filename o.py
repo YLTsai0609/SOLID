@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-def get_exp_and_histories(exp_keys: list) -> dict:
+def _get_exp_and_histories(exp_keys: list) -> dict:
     """
     根據輸入的實驗名稱，透過`get_histories`函數拿取相應的fold.pkl
     Args:
@@ -19,11 +19,11 @@ def get_exp_and_histories(exp_keys: list) -> dict:
     """
     exp_collection = {}
     for k in exp_keys:
-        exp_collection[k] = get_histories(k)
+        exp_collection[k] = _get_histories(k)
     return exp_collection
 
 
-def get_histories(exp_name: str) -> dict:
+def _get_histories(exp_name: str) -> dict:
     """
     根據輸入的實驗名稱拿取對應的history
     Args:
@@ -86,7 +86,7 @@ def plot_history(history: dict,
     return ax1, ax2
 
 
-def extract_label_keyword_func(exp_name: str, extract_pattern: re.Pattern) -> str:
+def _extract_label_keyword_func(exp_name: str, extract_pattern: re.Pattern) -> str:
     """
     Args:
         exp_name (str): 輸入的實驗名稱
@@ -113,7 +113,7 @@ def main(pattern_to_extract_label: re.Pattern):
 
     print(exp_keys)
 
-    exp_collections = get_exp_and_histories(exp_keys=exp_keys)
+    exp_collections = _get_exp_and_histories(exp_keys=exp_keys)
     colors = 'bgrcmykw'[:len(exp_collections.keys())]
 
     with plt.style.context(['science', 'grid', 'no-latex']):
@@ -129,8 +129,8 @@ def main(pattern_to_extract_label: re.Pattern):
                     row = 2
                 else:
                     raise ValueError('should be 3 fold in this experiments')
-                short_exp_name = extract_label_keyword_func(exp_name,
-                                                            pattern_to_extract_label)
+                short_exp_name = _extract_label_keyword_func(exp_name,
+                                                             pattern_to_extract_label)
                 axes[row][0], axes[row][1] = plot_history(history=history,
                                                           ax1=axes[row][0], ax2=axes[row][1],
                                                           lbl=short_exp_name,
