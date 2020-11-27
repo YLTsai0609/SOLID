@@ -46,6 +46,12 @@ class Admin(User):
         """
         return False
 
+    def deactivate(self):
+        """
+        停用該使用者，但Admin不能被停用
+        """
+        raise NotImplementedError('Cannot deactivate Admin')
+
 
 def deactivate_users(users: Iterable[User]):
     """
@@ -55,10 +61,10 @@ def deactivate_users(users: Iterable[User]):
         # 該使用者無法被停用
         if not user.allow_deactivate():
             print(
-                f'''skip deactivating user {user.username}\n because it is {user.__class__.__name__}''')
+                f'skip deactivating user {user.username}\n because it is {user.__class__.__name__}')
             continue
         else:
-            user.deactivate
+            user.deactivate()
 
 
 def main():
