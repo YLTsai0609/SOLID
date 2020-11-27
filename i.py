@@ -8,8 +8,8 @@
 '''
 
 
-def is_new_visitor(response) -> bool:
+def is_new_visitor(cookies) -> bool:
     """
     從cookie判斷是否是新的訪客
     """
-    return response.cookies.get('is_new_visitor') == 'y'
+    return cookies.get('is_new_visitor') == 'y'
