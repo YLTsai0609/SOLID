@@ -6,6 +6,10 @@
 那麼維護成本就會提高，可讀性也降低
 以下舉例為
 普通使用者User及管理員Admin對於停用方法`deactivate`的設計方式所需付出的維護成本
+
+若未來加入了Staff類別，VIP類別等，對於停用方法可能又有不同的要求，屆時維護成本提高
+以下透過理事替換原則進行設計，設計邏輯為 子類應當可以把父類全部換掉，程式還是能跑
+以下設計使得未來需求就算擴充到Staff, VIP, deactivate_users也不用重寫，可讀性也較好 
 '''
 from typing import Iterable
 
@@ -17,6 +21,12 @@ class User():
 
     def __init__(self, username: str):
         self.username = username
+
+    def allow_deactivate(self) -> bool:
+        """
+        是否允許停用
+        """
+        return True
 
     def deactivate(self):
         """
@@ -30,13 +40,17 @@ class Admin(User):
     管理員
     """
 
+    def allow_deactivate(self) -> bool:
+        """
+        是否允許停用
+        """
+        return False
+
     def deactivate(self):
         """
-        管理員無法被停用
-        Raises:
-            RuntimeError: [管理員無法被停用]
+        停用該使用者，但Admin不能被停用
         """
-        raise RuntimeError('admin can not be deactivated!')
+        raise NotImplementedError('Cannot deactivate Admin')
 
 
 def deactivate_users(users: Iterable[User]):
@@ -44,9 +58,10 @@ def deactivate_users(users: Iterable[User]):
     批量停用使用者
     """
     for user in users:
-        # 無法停用管理員，跳過
-        if isinstance(user, Admin):
-            print(f'skip deactivating admin user {user.username}')
+        # 該使用者無法被停用
+        if not user.allow_deactivate():
+            print(
+                f'skip deactivating user {user.username}\n because it is {user.__class__.__name__}')
             continue
         else:
             user.deactivate()

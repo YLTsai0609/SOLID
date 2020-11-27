@@ -20,7 +20,7 @@ O : 封閉修改，開放擴充原則 Open-Closed Principle
 
 L : 里氏替換原則 Liskov Substitution Principle
 
-    - 搭配例子 - TBC 
+    - 搭配例子 - [以User及Admin的停用操作，列出相關貼文兩個功能舉例] 
 
 I : 接口隔離原則 Interface Segregation Principles
 
