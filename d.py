@@ -55,7 +55,7 @@ class SiteSourceGrouper:
     對HackNews進行域名的分組統計
     """
 
-    def __init__(self, page: HNWebPage):
+    def __init__(self, page: RemoteHNWebPage):
         self.page = page
 
     def get_groups(self) -> Dict[str, int]:
@@ -79,6 +79,11 @@ def test_grouper_from_local():
 
 
 def main():
+    groups = SiteSourceGrouper(
+        RemoteHNWebPage("https://news.ycombinator.com/")
+    ).get_groups()
+    for key, value in groups.most_common(3):
+        print(f'Site: {key} | Count: {value}')
     test_grouper_from_local()
     print('Test passed!')
 
